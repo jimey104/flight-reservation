@@ -74,7 +74,7 @@ jobs:
 
       # 1. 디렉토리 및 .env 파일 먼저 생성
       - name: Prepare ~/msa-deploy and create .env
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
@@ -88,7 +88,7 @@ jobs:
 
       # 2. 그 다음 docker-compose.yml 복사
       - name: Copy docker-compose.yml to EC2
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
@@ -97,7 +97,7 @@ jobs:
           target: "~/msa-deploy"
 
       - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
