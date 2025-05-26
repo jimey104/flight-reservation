@@ -88,7 +88,7 @@ jobs:
 
       # 2. docker-compose.yml 복사
       - name: Copy docker-compose.yml to EC2
-        uses: appleboy/scp-action@91b1cfa9a2a79d9c0f4e6ff3c4883eb2c931f7da
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
