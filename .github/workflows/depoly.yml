@@ -48,6 +48,11 @@ jobs:
         with:
           node-version: '20'
 
+      # 🔹 1. 프론트 빌드 전에 .env 생성 (Vite용)
+      - name: Create .env for frontend before build
+        if: ${{ matrix.service == 'flight-reservation-front-main' }}
+        run: echo "${{ secrets.ENV_FILE }}" > ${{ matrix.service }}/.env
+
       - name: Build React frontend (only for frontend)
         if: ${{ matrix.service == 'flight-reservation-front-main' }}
         run: |
