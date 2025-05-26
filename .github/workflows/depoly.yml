@@ -86,7 +86,7 @@ jobs:
             echo "📄 Step 2: Create .env inside it"
             echo "${{ secrets.ENV_FILE }}" > ~/msa-deploy/.env
 
-      # 2. 그 다음 docker-compose.yml 복사
+      # 2. docker-compose.yml 복사
       - name: Copy docker-compose.yml to EC2
         uses: appleboy/scp-action@v0.1.10
         with:
