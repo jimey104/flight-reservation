@@ -70,6 +70,18 @@ services:
     networks:
       - msa-network
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - gateway
+    networks:
+      - msa-network
+
   eureka-service:
     image: jimey104/flight-reservation-server:latest
     ports:
