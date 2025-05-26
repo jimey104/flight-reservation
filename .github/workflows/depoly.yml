@@ -72,7 +72,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v3
 
-      # 1. 디렉토리 및 .env 파일 먼저 생성
+      # 1. 디렉토리 및 .env 파일 생성
       - name: Prepare ~/msa-deploy and create .env
         uses: appleboy/ssh-action@334f9259f2f8eb3376d33fa4c684fff373f2c2a6
         with:
