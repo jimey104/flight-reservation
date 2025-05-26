@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="flight-reservation-gateway.main" target="17" />
+      <module name="flight-reservation-gateway.test" target="17" />
+      <module name="flight-reservation-server.main" target="17" />
+      <module name="flight-reservation-server.test" target="17" />
+      <module name="flight-service.test" target="17" />
+      <module name="reservation-service.test" target="17" />
+      <module name="user-service.test" target="17" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

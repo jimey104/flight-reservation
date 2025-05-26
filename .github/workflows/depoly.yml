@@ -1,0 +1,120 @@
+name: Build and Push MSA Images
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service: [
+          flight-service,
+          flight-reservation-server,
+          user-service,
+          flight-reservation-gateway,
+          reservation-service,
+          flight-reservation-front-main  # ✅ 프론트 추가
+        ]
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17 (only for backend)
+        if: ${{ matrix.service != 'flight-reservation-front-main' }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set permission for Gradle wrapper (only for backend)
+        if: ${{ matrix.service != 'flight-reservation-front-main' }}
+        run: chmod +x ${{ matrix.service }}/gradlew
+
+      - name: Build JAR for ${{ matrix.service }} (only for backend)
+        if: ${{ matrix.service != 'flight-reservation-front-main' }}
+        run: |
+          cd ${{ matrix.service }}
+          ./gradlew clean bootJar -x test
+          cd ..
+
+      - name: Install Node.js (only for frontend)
+        if: ${{ matrix.service == 'flight-reservation-front-main' }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Build React frontend (only for frontend)
+        if: ${{ matrix.service == 'flight-reservation-front-main' }}
+        run: |
+          cd ${{ matrix.service }}
+          npm install
+          npm run build
+          cd ..
+
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build and Push Docker Image for ${{ matrix.service }}
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service }}:latest ./${{ matrix.service }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service }}:latest
+
+  deploy-to-ec2:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      # 1. 디렉토리 및 .env 파일 먼저 생성
+      - name: Prepare ~/msa-deploy and create .env
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            echo "📁 Step 1: Ensure directory exists"
+            mkdir -p ~/msa-deploy
+
+            echo "📄 Step 2: Create .env inside it"
+            echo "${{ secrets.ENV_FILE }}" > ~/msa-deploy/.env
+
+      # 2. 그 다음 docker-compose.yml 복사
+      - name: Copy docker-compose.yml to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          source: "docker-compose.yml"
+          target: "~/msa-deploy"
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          timeout: 1200
+          command_timeout: 1200
+          script: |
+            echo "🟢 Step 1: Starting Docker"
+            sudo systemctl start docker
+
+            echo "🟢 Step 2: Moving to msa-deploy"
+            cd ~/msa-deploy
+
+            echo "🟢 Step 3: Docker Compose Pull"
+            sudo docker-compose pull
+
+            echo "🟢 Step 4: Docker Compose Up"
+            sudo docker-compose up -d
+
+            echo "✅ Step 5: Containers are up and running"
