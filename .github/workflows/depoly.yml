@@ -102,8 +102,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          timeout: 1200
-          command_timeout: 1200
+          timeout: 1200s
+          command_timeout: 1200s
           script: |
             echo "🟢 Step 1: Starting Docker"
             sudo systemctl start docker
