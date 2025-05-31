@@ -1,7 +1,54 @@
-# Flight Reservation System
+## ✈️ **MSA 기반 항공편 예약 시스템**
+>
+> - Spring Boot 기반 3개 서비스: 유저 / 항공편 / 예매
+> - Gateway + Eureka + Kafka + Elasticsearch
+> - React + Vite 프론트 + 지도/날씨 오픈API 통합
+> - GitHub Actions + Docker + EC2로 CI/CD 구성
 
-## 개요
-**Flight Reservation System**은 MSA(Microservices Architecture)를 채택하여 항공편 검색, 예약, 유저 관리 등 다양한 서비스를 분산된 마이크로서비스로 구현한 애플리케이션입니다. 개별 서비스는 확장성과 유지보수에 용이하도록 구성되었으며, Eureka를 통한 서비스 디스커버리와 Gateway를 통한 API 라우팅을 지원합니다.
+---
+
+## 🛠 기술 스택 요약
+
+### ✅Backend 
+
+![Java](https://img.shields.io/badge/Java-17+-orange?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green?logo=springboot)
+![Gradle](https://img.shields.io/badge/Gradle-8.x-02303A?logo=gradle)
+![JWT](https://img.shields.io/badge/JWT-Auth-blueviolet?logo=jsonwebtokens)
+### ✅FrontEnd
+![React](https://img.shields.io/badge/React-18-blue?logo=react)
+![Vite](https://img.shields.io/badge/Vite-Bundler-646CFF?logo=vite)
+
+
+### ✅DataBase
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-DB-4169E1?logo=postgresql)
+### ✅DevOps
+![Docker](https://img.shields.io/badge/Docker-Container-2496ED?logo=docker)
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI%2FCD-2088FF?logo=githubactions)
+
+### ✅Infra
+![Kafka](https://img.shields.io/badge/Kafka-Event%20Streaming-black?logo=apachekafka)
+![Redis](https://img.shields.io/badge/Redis-Cache-red?logo=redis)
+![Elasticsearch](https://img.shields.io/badge/Elasticsearch-Search-blue?logo=elasticsearch)
+---
+
+## 📚 목차
+
+- [개요](#개요)
+- [아키텍처 개요](#아키텍처-개요)
+- [주요 기능](#주요-기능)
+- [기술 스택](#기술-스택)
+- [시스템 아키텍처](#시스템-아키텍처)
+- [API 문서화](#api-문서화-swagger)
+- [스크린샷](#screenshots)
+- [설치 및 실행 방법](#설치-및-실행-방법)
+- [사용 방법](#사용-방법)
+- [Roadmap](#roadmap--future-plans)
+- [기여 방법](#기여-방법)
+## 기능 시연 예시 
+
+### 항공편 검색 및 예약 흐름
+![flight-reservation-demo](./images/Test.mp4)
 
 ## 아키텍처 개요
 프로젝트는 아래와 같은 주요 컴포넌트로 구성됩니다:
@@ -37,7 +84,7 @@
 
 ---
 
-## 기술 스택
+## 기능 상세 설명
 - **백엔드**:
   - **언어/프레임워크**: Java 17 이상, Spring Boot  
   - **빌드 도구**: Gradle  
@@ -61,6 +108,11 @@
 - **데이터베이스**: MySQL 또는 PostgreSQL
 
 ---
+
+## 시스템 아키텍처
+> 아래는 본 프로젝트의 전체 시스템 및 흐름 아키텍처 구성도입니다.
+
+![Architecture Diagram](./images/BackEnd.png)
   
 ## API 문서화 (Swagger)
 각 마이크로서비스의 API는 Swagger를 통해 문서화되어 있습니다.  
@@ -104,62 +156,32 @@
 이 프로젝트는 백엔드(마이크로서비스)와 프론트엔드(React + Vite)로 구성되어 있으며, 각 마이크로서비스는 독립된 Gradle 모듈 또는 애플리케이션으로 구성되어 있습니다.
 
 
-## 백엔드 (마이크로서비스) 빌드 및 실행
+## 백엔드 (MSA) 및 프런트엔드(React) 통합 서비스 실행
 
-### 공통 빌드 (예시)
-```bash
-./gradlew build
-```
+### Docker Compose 기반 전체 서비스 실행
 
-### Eureka 서버 실행 (포트 8761)
-```bash
-./gradlew :eureka-server:bootRun
+```bash 
+ ./rebuild.sh
 ```
-
-### Gateway 실행 (포트 8443)
-```bash
-./gradlew :gateway:bootRun
-```
-
-### 유저 서비스 실행 (포트 8081)
-```bash
-./gradlew :user-service:bootRun
-```
-
-### 항공 서비스 실행 (포트 8082)
-```bash
-./gradlew :flight-service:bootRun
-```
-
-### 예매 서비스 실행 (포트 8083)
-```bash
-./gradlew :reservation-service:bootRun
-```
+- 위 스크립트는 모든 백엔드 서비스(Eureka, Gateway, 각 서비스) 및 프론트엔드를 Docker로 빌드 및 실행합니다.
+- docker-compose.yml을 기준으로 실행되며, 내부적으로 docker-compose up -d --build 명령이 수행됩니다.
 
 각 서비스 실행 후, [Eureka 대시보드](http://localhost:8761)에 접속하여 등록된 서비스 목록을 확인할 수 있습니다.
 
 ---
 
-## 프론트엔드 실행 (React + Vite)
-
-1. 프론트엔드 디렉토리로 이동:
-   ```bash
-   cd flight-reservation-front-main
-   npm install
-   ```
-2. 개발 서버 실행:
-   ```bash
-   npm run dev
-   ```
-3. 브라우저에서 [http://localhost:5173](http://localhost:5173)으로 접속하여 프론트엔드 애플리케이션을 확인합니다.
-
----
 
 ## 사용 방법
 
 - **웹 인터페이스**: 브라우저에서 Gateway 주소([https://localhost:8443](https://localhost:8443))를 통해 각 서비스 기능에 접근합니다.
 - **API 사용**: 각 마이크로서비스는 독립적인 RESTful API를 제공하며, Swagger 또는 Postman을 통해 개별 API 엔드포인트를 테스트할 수 있습니다.
 - **서비스 디스커버리**: Eureka 대시보드를 통해 현재 등록된 서비스 목록 및 상태를 확인할 수 있습니다.
+
+---
+## 트러블슈팅 사례(Troubleshooting)
+아래는 각 마이크로서비스에서 발생했던 주요 이슈와 해결 과정입니다.
+
+- [항공 서비스 이슈](./docs/troubleshooting/flight-service.md)
 
 ---
 
@@ -169,6 +191,13 @@
 - **서비스 안정화**: 각 마이크로서비스(유저, 항공, 예매 서비스)의 기본 기능 구현 완료 및 통합 테스트 진행 중.
 - **API 문서화**: Swagger를 활용한 API 문서화 작업 완료 및 주기적인 업데이트.
 - **인프라 구축**: Eureka, Gateway, Redis, Elasticsearch, Kafka 등 주요 인프라 구성 완료.
+---
+## 📈 프로젝트 결과 및 성과
+(3개의 마이크로서비스 동시 실행 기준 , 1000건 + 검색 쿼리)
+
+- ✅ Kafka 기반 비동기 통신 도입 → 예약 처리 속도 **약 1.7배 향상**
+- ✅ Elasticsearch 적용 → **1000건 이상의 항공편 검색을 평균 3초 이내 응답**
+- ✅ CI/CD 구축 완료 → GitHub Actions + Docker 기반의 **자동 배포 파이프라인 구성 완료**
 
 ### 향후 추가할 기능
 - **자동화 배포**: CI/CD 파이프라인 구축 및 Docker 기반 컨테이너 배포 도입.
@@ -182,6 +211,12 @@
 - **UI/UX 개선**: 프론트엔드 사용자 경험 개선 및 디자인 피드백 반영.
 
 ---
+
+## 🚀 배포 관련 문서
+
+해당 프로젝트의 배포 인프라, 도메인 설정, CI/CD 자동화 관련 내용은 아래 문서를 참고해주세요.
+
+📄 [배포 문서 보기](./docs/troubleshooting/DEPLOYMENT.md)
 
 ## 기여 방법
 
@@ -205,5 +240,3 @@
 ## 문의 및 연락처
 
 프로젝트 관련 문의는 [Parksoonil GitHub 프로필](https://github.com/parksoonil) 또는 이슈 트래커를 통해 연락해주시면 됩니다.
-# Test-flight
-# Flight-Service
